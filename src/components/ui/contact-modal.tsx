@@ -12,6 +12,7 @@ interface ContactModalProps {
 interface FormData {
   name: string;
   email: string;
+  company: string;
   phone: string;
   message: string;
 }
@@ -20,6 +21,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
+    company: '',
     phone: '',
     message: ''
   });
@@ -42,6 +44,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     }
     if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError('Valid email is required');
+      return false;
+    }
+    if (!formData.company.trim()) {
+      setError('Company is required');
       return false;
     }
     if (!formData.phone.trim()) {
@@ -70,6 +76,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
       const googleFormData = new FormData();
       googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_NAME || '', formData.name);
       googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_EMAIL || '', formData.email);
+      googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_COMPANY || '', formData.company);
       googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_PHONE || '', formData.phone);
       googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_MESSAGE || '', formData.message);
 
@@ -82,7 +89,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
       // Since no-cors doesn't return a response, we assume success
       setSuccess(true);
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormData({ name: '', email: '', company: '', phone: '', message: '' });
       
       // Close modal after 2 seconds
       setTimeout(() => {
@@ -182,6 +189,21 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="your@email.com"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                        Company *
+                      </label>
+                      <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        placeholder="Your company name"
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
                       />
                     </div>
