@@ -66,18 +66,21 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/contact', {
+      // Create form data for Google Forms
+      const googleFormData = new FormData();
+      googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_NAME || '', formData.name);
+      googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_EMAIL || '', formData.email);
+      googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_PHONE || '', formData.phone);
+      googleFormData.append(process.env.NEXT_PUBLIC_GOOGLE_ENTRY_MESSAGE || '', formData.message);
+
+      // Submit to Google Forms
+      await fetch(process.env.NEXT_PUBLIC_GOOGLE_FORM_ACTION || '', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        body: googleFormData,
+        mode: 'no-cors', // Important: Google Forms requires no-cors mode
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
+      // Since no-cors doesn't return a response, we assume success
       setSuccess(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
       
